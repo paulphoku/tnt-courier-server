@@ -27,7 +27,6 @@ module.exports = {
         key:'AIzaSyAr7NikHspaxjGJ7vj-MvAXhdxwJWmG6SU'
     },
 
-
     firebase: {
         sitelive: {
             apiKey: "AIzaSyCeHmhn9RPt9o31n57W8fzsoeNno297aNE",

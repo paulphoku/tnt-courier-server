@@ -106,6 +106,18 @@ const do_get_directions = async function (res, origin, destination) {
     });
 };
 
+const do_get_geocode_address = async function (res, latlng) {
+
+    request(`https://maps.googleapis.com/maps/api/geocode/json?key=${conf.googleMaps.key}&latlng=${latlng}`, { json: true }, (err, res1, body) => {
+        if (err) { return console.log(err); }
+        // console.log(body);
+        // console.log(body.explanation);
+        res.send({
+            data: body
+        })
+    });
+};
+
 router.post("/places", async function (req, res) {
     try {
         await do_get_places(
@@ -142,5 +154,18 @@ router.post("/places-nearby", async function (req, res) {
         console.log(err);
     }
 });
+
+router.post("/address", async function (req, res) {
+    try {
+        await do_get_geocode_address(
+            res,
+            req.body.latlng
+        );
+    } catch (err) {
+        notify.sendError(res);
+        console.log(err);
+    }
+});
+
 
 module.exports = router;
