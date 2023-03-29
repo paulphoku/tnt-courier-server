@@ -2,6 +2,7 @@ var express = require("express");
 var notify = require("../../notify");
 var router = express.Router();
 var conf = require("../../conf")
+var polyline = require('polyline');
 
 const request = require('request');
 const util = require('util');
@@ -63,6 +64,8 @@ const do_get_directions = async function (res, origin, destination) {
     request(`https://maps.googleapis.com/maps/api/directions/json?key=${conf.googleMaps.key}&origin=${origin}&destination=${destination}`, { json: true }, (err, res1, body) => {
         if (err) { return console.log(err); }
 
+        console.log('body:', body);
+
         let points = polyline.decode(body.routes[0].overview_polyline.points);
         //console.log(points);
         let path = [];
@@ -85,22 +88,22 @@ const do_get_directions = async function (res, origin, destination) {
         //convert to km
         distance = distance / 1000;
 
-        db.query("SELECT description, fare_p_min, fare_per_km , usage_desc FROM vehicle_type", [], async function (error, rows, fields) {
-            let vehicle = [];
-            for (let k = 0; k < rows.length; k++) {
-                vehicle.push({
-                    description: rows[k].description,
-                    fare_p_min: rows[k].fare_p_min,
-                    fare_per_km: rows[k].fare_per_km,
-                    fare: Math.round(Number(rows[k].fare_per_km) * distance)/**Rounded off to whole number */,
-                    usage: rows[k].usage_desc
-                })
-            }
-            //send data
-            res.send({
-                path: path, bounds: bounds, distance: distance, vehicle
-            })
+        // db.query("SELECT description, fare_p_min, fare_per_km , usage_desc FROM vehicle_type", [], async function (error, rows, fields) {
+        let vehicle = [];
+        // for (let k = 0; k < rows.length; k++) {
+        //     vehicle.push({
+        //         description: rows[k].description,
+        //         fare_p_min: rows[k].fare_p_min,
+        //         fare_per_km: rows[k].fare_per_km,
+        //         fare: Math.round(Number(rows[k].fare_per_km) * distance)/**Rounded off to whole number */,
+        //         usage: rows[k].usage_desc
+        //     })
+        // }
+        //send data
+        res.send({
+            path: path, bounds: bounds, distance: distance, vehicle
         })
+        // })
 
 
     });

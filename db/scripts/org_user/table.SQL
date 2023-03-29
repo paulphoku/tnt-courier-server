@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS org_user CASCADE;
+
+CREATE TABLE IF NOT EXISTS org_user (
+    id SERIAL PRIMARY KEY NOT NULL,
+    org_id TEXT NOT NULL,
+    tel TEXT NULL,
+    date_created TIMESTAMP NULL
+)
