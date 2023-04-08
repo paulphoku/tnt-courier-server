@@ -5,5 +5,6 @@ CREATE TABLE IF NOT EXISTS dispatch (
     driver_id TEXT NOT NULL,
     date_created TIMESTAMP NULL,
     schedule_time TEXT NULL,
-    manifest_id TEXT NULL
+    manifest_id TEXT NULL,
+    dispatched_by TEXT
 )

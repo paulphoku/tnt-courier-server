@@ -1,8 +1,7 @@
 DROP TABLE IF EXISTS manifest CASCADE;
-
 CREATE TABLE IF NOT EXISTS manifest (
     id SERIAL PRIMARY KEY NOT NULL,
     ploc_id TEXT NOT NULL,
     date_created TIMESTAMP NULL,
     packed_by TEXT NULL
-)
+);
