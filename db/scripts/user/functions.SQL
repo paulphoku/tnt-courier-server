@@ -114,7 +114,7 @@ END $$ LANGUAGE plpgsql;
  );
  */
 -------------------END----------------------------------------------
---GET user BY user ID
+--GET user BY user_id, email, tel
 DROP FUNCTION IF EXISTS get_user(user_id TEXT);
 CREATE FUNCTION get_user(user_id TEXT) RETURNS TABLE (
     uuid TEXT,
@@ -157,7 +157,9 @@ SELECT u.uuid,
 FROM t_user u,
     t_user_role r
 WHERE r.user_id = u.uuid
-    AND u.uuid = get_user.user_id;
+    AND u.uuid = get_user.user_id
+    OR u.email = get_user.user_id
+    OR u.contact = get_user.user_id;
 END $$ LANGUAGE plpgsql;
 -- SELECT * FROM get_user('1e4778c0-d5f1-11ed-b9bb-83fbde88e6bf');
 -------------------END----------------------------------------------

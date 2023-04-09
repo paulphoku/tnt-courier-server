@@ -1,25 +1,33 @@
 var express = require("express");
-var db = require("../db");
-var notify = require("../notify");
+var db = require("../../db");
+var notify = require("../../notify");
 var router = express.Router();
 
 const do_get_all_user = async function (res, search, SortBy, filterBy) {
 
-    db.query("Select uuid, user_role, names, DATE_FORMAT(datecreated,'%Y-%b-%d  %H:%i') as datecreated, surname, contact, email, address, description AS gender, photourl, dateofbirth From user , gender WHERE (user.gender = gender.id) AND (user.email like '%" + search + "%' OR user.names like '%" + search + "%' OR user.surname like '%" + search + "%') ORDER BY  "+filterBy+" "+SortBy+"", [ ], function (error, rows, fields) {
+    db.query("SELECT * FROM get_user();", [], function (error, rows, fields) {
         if (error) {
             console.log(error)
         }
-        res.send({ msg: "Done", status: 0, rows: rows.length, data: rows });
+        res.send({ msg: "Done", status: 0, rows: rows.length, data: rows.rows });
     })
 };
 
-router.get("/:", async function (req, res) {
+const do_get_user = async function (res, user_id) {
+    db.query(`SELECT * FROM get_user('${user_id}');`, [], function (error, rows, fields) {
+        if (error) {
+            console.log(error)
+        }
+        res.send({ msg: "Done", status: 0, rows: rows.length, data: rows.rows });
+    })
+}
+
+router.get("/:user_id", async function (req, res) {
     try {
-        await do_get_all_user(
+        // console.log({user_id:req.params.user_id})
+        await do_get_user(
             res,
-            req.params.search,
-            req.params.SortBy,
-            req.params.filterBy
+            req.params.user_id
         );
     } catch (err) {
         notify.sendError(res);
