@@ -4,35 +4,35 @@ module.exports = {
 
 
     // This connects to the postgres.render server
+    db_conf: {
+        user: "tntc_main_user",
+        host: "dpg-cgphce0rddl9mmvld670-a.oregon-postgres.render.com",
+        database: "tntc_main",
+        password: "ksdzTVnc776YzZVZ9k0UzSWk2OYr3Paj",
+        port: 5432,
+        ssl: true
+    },
+
+    // This connects to the local server
     // db_conf: {
     //     user: "postgres",
     //     host: "localhost",
     //     database: "tntc.main",
-    //     password: "postgres",
+    //     password: "Push2life@",
     //     port: 5432,
     //     ssl: false
     // },
 
-    // This connects to the local server
-    db_conf: {
-        user: "postgres",
-        host: "localhost",
-        database: "tntc.main",
-        password: "Push2life@",
-        port: 5432,
-        ssl: false
-    },
-
-     //this connects to sms service
-     twillio: {
+    //this connects to sms service
+    twillio: {
         twilioNumber: '+15075955823',
         accountSid: 'ACb43150568429fac3440ea1cc0c177e9a',
         authToken: '04fab8194dc8ac3d86f5d15dcf47d82a',
         messagingServiceSid: 'MGed1c2df7507d0168400b2ca4ef89f238'
     },
 
-    googleMaps:{
-        key:'AIzaSyAr7NikHspaxjGJ7vj-MvAXhdxwJWmG6SU'
+    googleMaps: {
+        key: 'AIzaSyAr7NikHspaxjGJ7vj-MvAXhdxwJWmG6SU'
     },
 
     firebase: {

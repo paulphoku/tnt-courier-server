@@ -9,7 +9,7 @@ CREATE TABLE IF NOT EXISTS t_user (
     country TEXT NULL,
     state TEXT NULL,
     datecreated TIMESTAMP NOT NULL,
-    modifiedondatetime TIMESTAMP NULL,
+    modifiedondatetime TIMESTAMP NOT NULL,
     password TEXT NULL,
     salt TEXT NULL,
     gender TEXT NULL,
@@ -17,5 +17,5 @@ CREATE TABLE IF NOT EXISTS t_user (
     surname TEXT NULL,
     photourl TEXT NULL,
     username TEXT NULL,
-    dob TEXT NULL
+    dob TIMESTAMP NULL
 );

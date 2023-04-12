@@ -16,7 +16,7 @@ DROP FUNCTION IF EXISTS add_user(
     surname TEXT,
     photourl TEXT,
     username TEXT,
-    dob TEXT
+    dob TIMESTAMP
 ) CASCADE;
 CREATE FUNCTION add_user (
     user_role TEXT,
@@ -35,10 +35,15 @@ CREATE FUNCTION add_user (
     surname TEXT,
     photourl TEXT,
     username TEXT,
-    dob TEXT
+    dob TIMESTAMP
 ) RETURNS TEXT AS $$
 DECLARE created_id TEXT;
-BEGIN
+BEGIN --	Ensure user does not exists
+PERFORM *
+FROM t_user u
+WHERE u.email = add_user.email;
+IF FOUND THEN RETURN -1;
+END IF;
 INSERT INTO t_user (
         uuid,
         address,
@@ -134,7 +139,7 @@ CREATE FUNCTION get_user(user_id TEXT) RETURNS TABLE (
     surname TEXT,
     photourl TEXT,
     username TEXT,
-    dob TEXT
+    dob TIMESTAMP
 ) AS $$ BEGIN RETURN QUERY
 SELECT u.uuid,
     r.role,
@@ -157,11 +162,13 @@ SELECT u.uuid,
 FROM t_user u,
     t_user_role r
 WHERE r.user_id = u.uuid
-    AND u.uuid = get_user.user_id
-    OR u.email = get_user.user_id
-    OR u.contact = get_user.user_id;
+    AND (
+        u.uuid = get_user.user_id
+        OR u.email = get_user.user_id
+        OR u.contact = get_user.user_id
+    );
 END $$ LANGUAGE plpgsql;
--- SELECT * FROM get_user('1e4778c0-d5f1-11ed-b9bb-83fbde88e6bf');
+-- SELECT * FROM get_user('+270842929337');
 -------------------END----------------------------------------------
 -- SELECT * FROM get_user(1);
 -------------------END----------------------------------------------
