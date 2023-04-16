@@ -1,6 +1,6 @@
 --ADD request
-DROP FUNCTION IF EXISTS add_request();
-CREATE FUNCTION add_request (
+DROP FUNCTION IF EXISTS add_request(
+    user_id TEXT,
     description TEXT,
     weight FLOAT,
     price FLOAT,
@@ -16,8 +16,26 @@ CREATE FUNCTION add_request (
     schedule_time TIMESTAMP,
     polyline TEXT,
     addedondatetime TIMESTAMP
-) RETURNS INT AS $$
-DECLARE created_id INT;
+);
+CREATE FUNCTION add_request (
+    user_id TEXT,
+    description TEXT,
+    weight FLOAT,
+    price FLOAT,
+    destination_address TEXT,
+    destination_lat FLOAT,
+    destination_lng FLOAT,
+    collection_address TEXT,
+    collection_lat FLOAT,
+    collection_lng FLOAT,
+    reciever_name TEXT,
+    reciever_cell TEXT,
+    request_notes TEXT,
+    schedule_time TIMESTAMP,
+    polyline TEXT,
+    addedondatetime TIMESTAMP
+) RETURNS TEXT AS $$
+DECLARE created_id TEXT;
 BEGIN
 INSERT INTO request (
         description,
@@ -51,10 +69,10 @@ VALUES (
         add_request.schedule_time,
         add_request.polyline
     )
-RETURNING id INTO created_id;
+RETURNING request_id INTO created_id;
 INSERT INTO request_customer (
         cust_id,
-        requsest_id,
+        request_id,
         request_status,
         addedondatetime
     )
@@ -89,9 +107,10 @@ END $$ LANGUAGE plpgsql;
  */
 -------------------END----------------------------------------------
 --GET request BY request ID
-DROP FUNCTION IF EXISTS get_request(request_id INT);
-CREATE FUNCTION get_request(request_id INT) RETURNS TABLE (
+DROP FUNCTION IF EXISTS get_request(r_id TEXT);
+CREATE FUNCTION get_request(r_id TEXT) RETURNS TABLE (
     id INT,
+    request_id VARCHAR,
     description TEXT,
     weight FLOAT,
     price FLOAT,
@@ -111,6 +130,7 @@ CREATE FUNCTION get_request(request_id INT) RETURNS TABLE (
     addedondatetime TIMESTAMP
 ) AS $$ BEGIN RETURN QUERY
 SELECT r.id,
+    r.request_id,
     r.description,
     r.weight,
     r.price,
@@ -130,15 +150,16 @@ SELECT r.id,
     rc.addedondatetime
 FROM request r,
     request_customer rc
-WHERE rc.requsest_id = r.id
-    AND r.id = get_request.request_id;
+WHERE rc.request_id = r.request_id
+    AND r.request_id = get_request.r_id;
 END $$ LANGUAGE plpgsql;
--- SELECT * FROM get_request(1);
+-- SELECT * FROM get_request('T23000001');
 -------------------END----------------------------------------------
 --GET request BY user ID
-DROP FUNCTION IF EXISTS get_request(user_id TEXT);
-CREATE FUNCTION get_request(user_id TEXT) RETURNS TABLE (
+DROP FUNCTION IF EXISTS get_request_user(user_id TEXT);
+CREATE FUNCTION get_request_user(user_id TEXT) RETURNS TABLE (
     id INT,
+    request_id VARCHAR,
     description TEXT,
     weight FLOAT,
     price FLOAT,
@@ -158,6 +179,7 @@ CREATE FUNCTION get_request(user_id TEXT) RETURNS TABLE (
     addedondatetime TIMESTAMP
 ) AS $$ BEGIN RETURN QUERY
 SELECT r.id,
+    r.request_id,
     r.description,
     r.weight,
     r.price,
@@ -177,14 +199,15 @@ SELECT r.id,
     rc.addedondatetime
 FROM request r,
     request_customer rc
-WHERE rc.requsest_id = r.id
-    AND rc.cust_id = get_request.user_id;
+WHERE rc.request_id = r.request_id
+    AND rc.cust_id = get_request_user.user_id;
 END $$ LANGUAGE plpgsql;
--- SELECT * FROM get_request('requested_by');
+-- SELECT * FROM get_request_user('requested_by');
 --GET ALL request
 DROP FUNCTION IF EXISTS get_request();
 CREATE FUNCTION get_request() RETURNS TABLE (
     id INT,
+    request_id TEXT,
     description TEXT,
     weight FLOAT,
     price FLOAT,
@@ -204,6 +227,7 @@ CREATE FUNCTION get_request() RETURNS TABLE (
     addedondatetime TIMESTAMP
 ) AS $$ BEGIN RETURN QUERY
 SELECT r.id,
+    r.request_id,
     r.description,
     r.weight,
     r.price,
@@ -225,4 +249,32 @@ FROM request r,
     request_customer rc;
 END $$ LANGUAGE plpgsql;
 -- SELECT * FROM get_request();
+-------------------END----------------------------------------------
+--GET recent places
+DROP FUNCTION IF EXISTS get_request_places(user_id TEXT);
+CREATE FUNCTION get_request_places(user_id TEXT) RETURNS TABLE (
+    structured_formatting TEXT,
+    description TEXT,
+    location JSON,
+    isRecent BOOlEAN
+) AS $$ BEGIN RETURN QUERY
+SELECT r.destination_address as structured_formatting,
+    '' as description,
+    json_build_object(
+        'lat',
+        r.destination_lat,
+        'lng',
+        r.destination_lng
+    ) as location,
+    true as isRecent
+FROM request r,
+    request_customer rc
+WHERE rc.request_id = r.request_id
+    AND rc.cust_id = get_request_places.user_id
+GROUP BY r.destination_address,
+    r.destination_lat,
+    r.destination_lng
+LIMIT 5;
+END $$ LANGUAGE plpgsql;
+-- SELECT * FROM get_request_places('user_id');
 -------------------END----------------------------------------------

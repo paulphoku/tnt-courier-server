@@ -22,9 +22,11 @@ app.use(express.urlencoded({ limit: '50mb', extended: false }));
 
 app.use('/', require('./routes/index'));
 app.use('/v1/geocode',  require('./routes/v1/geocode'));
+app.use('/v1/handshake',  require('./routes/v1/handshake'));
+app.use('/v1/request', require('./routes/v1/request'));
 app.use('/v1/transaction', require('./routes/v1/transaction'));
-app.use('/v1/verification', require('./routes/v1/verification'));
 app.use('/v1/user', require('./routes/v1/user'));
+app.use('/v1/verification', require('./routes/v1/verification'));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

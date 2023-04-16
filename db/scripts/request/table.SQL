@@ -14,6 +14,6 @@ CREATE TABLE IF NOT EXISTS request (
     reciever_name TEXT NULL,
     reciever_cell TEXT NULL,
     request_notes TEXT NULL,
-    schedule_time TIMESTAMP,
-    polyline TEXT
+    schedule_time TIMESTAMP NULL,
+    polyline TEXT NULL
 );

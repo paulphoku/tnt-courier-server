@@ -3,6 +3,8 @@ var notify = require("../../notify");
 var router = express.Router();
 var conf = require("../../conf")
 var polyline = require('polyline');
+var db = require("../../db");
+
 
 const request = require('request');
 const util = require('util');
@@ -56,6 +58,21 @@ const do_get_places_nearby = async function (res, input) {
             res.send(places);
         }
     }
+
+};
+
+const do_get_recent_places = async function (res, user_id) {
+
+    db.query(`SELECT * FROM get_request_places($1);`, [user_id], function (error, rows, fields) {
+        if (error) {
+            console.log(error)
+        }
+        if (rows && rows.rows.length > 0) {
+            res.send({ msg: "Done", status: 0, data: rows.rows });
+        } else {
+            res.send({ status: 1, msg: 'Could not process request!' });
+        }
+    })
 
 };
 
@@ -126,6 +143,18 @@ router.post("/places", async function (req, res) {
         await do_get_places(
             res,
             req.body.input
+        );
+    } catch (err) {
+        notify.sendError(res);
+        console.log(err);
+    }
+});
+
+router.post("/places/:user_id", async function (req, res) {
+    try {
+        await do_get_recent_places(
+            res,
+            req.params.user_id
         );
     } catch (err) {
         notify.sendError(res);
